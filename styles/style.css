@@ -1,0 +1,12 @@
+body{
+    background-color: #424242;
+}
+hr {
+    border: 3px solid  gray;
+}
+.form-group>.input-group>.input-group-prepend {
+    flex: 0 0 45%;
+}
+.input-group .input-group-text {
+    width: 100%;
+}

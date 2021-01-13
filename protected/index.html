@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Skytools</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="data/styles/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <div class="text-center">
+      <figure class="figure">
+        <img src="data/img/skytools.png" class="figure-img img-fluid rounded"
+          alt="A generic square placeholder image with rounded corners in a figure.">
+        <figcaption class="figure-caption text-center text-white">The tool to help you perform easy tasks with NMS API!</figcaption>
+      </figure>
+    </div>
+
+    <hr class="my-4">
+  </div>
+
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-4">
+
+
+        <form class="needs-validation tokenBearer" novalidate>
+
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" for="api-username">Client ID</span>
+              </div>
+              <input type="text" class="form-control" placeholder="Client ID" aria-label="username api"
+                id="api-username" name="client_id" required>
+              <div class="invalid-feedback">
+                Please enter the Client ID (API Username).
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" for="api-password">Client Password</span>
+              </div>
+              <input type="password" class="form-control" placeholder="Client Password" aria-label="password api"
+                id="api-password" name="client_secret" required>
+              <div class="invalid-feedback">
+                Please enter the Client Password (API Password).
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" for="pbx-username">PBX Username</span>
+              </div>
+              <input type="text" class="form-control" placeholder="PBX Username" aria-label="pbx username"
+                id="pbx-username" name="username" required>
+              <div class="invalid-feedback" required>
+                Please enter the PBX Username (Credentials for the domain).
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" for="pbx-password">PBX Password</span>
+              </div>
+              <input type="password" class="form-control" placeholder="PBX password" aria-label="pbx password"
+                id="pbx-password" name="password" required>
+              <div class="invalid-feedback">
+                Please enter the PBX password (Credentials for the domain).
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+
+        </form>
+
+      </div>
+
+
+      <!-- #######Alert for Token success########## -->
+      <div class="col d-none">
+        <div class="alert alert-success BearerSuccessDiv fade" role="alert">
+          <h4 class="alert-heading BearerSuccessH4"></h4>
+          <p class="BearerSuccessP"></p>
+        </div>
+      </div>
+
+      <!-- #######Alert for Token Error######### -->
+      <div class="col d-none">
+        <div class="alert alert-danger BearerErrorDiv fade" role="alert">
+          <h4 class="alert-heading BearerErrorH4"></h4>
+          <p class="BearerErrorP"></p>
+        </div>
+      </div>
+      <!-- ############################### -->
+
+      <!-- #####Alert for Actions (get phones, get contacts..) sucess####-->
+      <div class="col d-none">
+        <div class="alert alert-success actionSuccessDiv fade" role="alert">
+          <h4 class="alert-heading actionSuccessH4"></h4>
+          <p class="actionSuccessP"></p>
+        </div>
+      </div>
+
+      <!-- ####Alert for Actions error### -->
+
+      <div class="col d-none">
+        <div class="alert alert-danger actionErrorDiv fade" role="alert">
+          <h4 class="alert-heading actionErrorH4"></h4>
+          <p class="actionErrorP"></p>
+        </div>
+      </div>
+      <!-- ############### -->
+
+      <!-- ####Alert for Actions Progress### -->
+      <div class="col d-none">
+        <div class="alert alert-warning actionProgressDiv fade" role="alert">
+          <h4 class="alert-heading actionProgressH4"></h4>
+          <p class="actionProgressP"></p>
+        </div>
+      </div>
+
+ 
+
+      <!-- Confirmation form for rebooting phones (modal) -->
+      <div class="modal fade" id="rebootModal" tabindex="-1" data-backdrop="static" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalRebootConfirmationLabel"></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="modalRebootConfirmationBody"></div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger performAction" data-dismiss="modal">Let's do it</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tabs panel -->
+    <div class="row mt-4">
+      <div class="col-xs-12">
+
+        <!-- Tabs -->
+        <ul class="nav nav-pills tabActions" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link disabled" id="reboot-tab" data-toggle="pill" href="#reboot" role="tab"
+              aria-controls="reboot" aria-selected="true">Phone Reboot</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link disabled" id="profile-tab" data-toggle="pill" href="#profile" role="tab"
+              aria-controls="profile" aria-selected="false">Get Contacts</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link disabled" id="contact-tab" data-toggle="pill" href="#contact" role="tab"
+              aria-controls="contact" aria-selected="false">To be continued</a>
+          </li>
+        </ul>
+
+
+        <!-- Tabs content -->
+        <div class="tab-content mt-4" id="reboot-content">
+
+          <!-- Content for Phone Reboot tab -->
+          <div class="tab-pane fade show active" id="reboot" role="tabpanel" aria-labelledby="reboot-tab">
+            <!-- Row for Get phone form -->
+
+            <div class="row">
+              <div class="col">
+
+
+                <fieldset class="rebootForm" disabled>
+
+                  <form class="needs-validation form-inline formReboot" novalidate>
+
+                    <label class="sr-only" for="domainForm">Domain</label>
+                    <div class="input-group mb-2 mr-sm-2">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">Domain</div>
+                      </div>
+                      <input type="text" class="form-control" id="domainForm"
+                        placeholder="yeisondomaintest.15611.service" name="domain" size="40" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Get Phones</button>
+
+                  </form>
+
+                </fieldset>
+
+              </div>
+            </div>
+
+            <!-- Row for "Show phones" meu -->
+            <div class="row">
+              <div class="col">
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Show and reboot phones toolbar">
+
+                  <!-- Label -->
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text" id="btnGroupAddon">Show phones</div>
+                    </div>
+                  </div>
+
+                  <!-- Radio Show phones Buttons -->
+                  <div class="btn-group btn-group-toggle showPhonesButtons ml-1" data-toggle="buttons">
+                    <label class="btn btn-success showAllPhones disabled">
+                      <input type="radio" name="options" id="option1" autocomplete="off"> All
+                    </label>
+                    <label class="btn btn-success showRegisteredPhones disabled">
+                      <input type="radio" name="options" id="option2" autocomplete="off"> Registered
+                    </label>
+                    <label class="btn btn-success showSupportedPhones disabled">
+                      <input type="radio" name="options" id="option3" autocomplete="off"> Supported
+                    </label>
+                    <label class="btn btn-success hideAllPhones disabled">
+                      <input type="radio" name="options" id="option4" autocomplete="off"> Hide
+                    </label>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Row for "Reboot phones" menu -->
+            <div class="row mt-2">
+
+              <div class="col">
+                <div class="btn-toolbar" role="toolbar" aria-label="Show and reboot phones toolbar">
+
+                  <!-- Label -->
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text" id="btnGroupAddon">Reboot phones</div>
+                    </div>
+                  </div>
+
+                  <!-- Reboot Buttons -->
+                  <div class="btn-group rebootPhonesButtons ml-1">
+
+
+                    <button type="button" class="btn btn-danger rebootAllBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>All</button>
+                    <button type="button" class="btn btn-danger rebootRegisteredBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>Registered</button>
+                    <button type="button" class="btn btn-danger rebootSupportedBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>Supported</button>
+                    <button type="button" class="btn btn-danger rebootSelectedBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>Selected</button>
+
+                  </div>
+
+
+                </div>
+
+
+              </div>
+
+            </div>
+
+            <!-- Row to display phones -->
+            <div class="row mt-4">
+              <div class="col-xs-12">
+
+                <table class="table table-dark phonesTab">
+                  <thead>
+                    <th scope="col">Select</th>
+                    <th scope="col">SIP Node</th>
+                    <th scope="col">AOR</th>
+                    <th scope="col">Registration IP</th>
+                    <th scope="col">Registration Time</th>
+                    <th scope="col">Registration Expires</th>
+                    <th scope="col">Sub_Scope</th>
+                    <th scope="col">User Agent</th>
+                  </thead>
+
+                  <!-- <tbody>
+                    <tr>
+                      <td>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="customCheck1">
+                          <label class="custom-control-label" for="customCheck1">1</label>
+                      </div>
+                      </td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                    </tr>
+                  </tbody> -->
+
+                </table>
+
+              </div>
+            </div>
+
+
+          </div>
+
+
+          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+            <!-- Row for get contacts form -->
+
+            <div class="row">
+              <div class="col">
+
+
+
+
+                <form class="needs-validation form-inline formContacts" novalidate>
+
+                  <label class="sr-only" for="contactFormDomain">Domain</label>
+                  <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">Domain</div>
+                    </div>
+                    <input type="text" class="form-control" id="contactFormDomain"
+                      placeholder="yeisondomaintest.15611.service" name="domain" size="40" required>
+                  </div>
+
+                  <label class="sr-only" for="contactFormUser">user</label>
+                  <input type="text" class="form-control mb-2 mr-sm-2" id="contactFormUser" placeholder="Ext (Optional)"
+                    name="user">
+
+
+                  <button type="submit" class="btn btn-primary mb-2">Retrieve Contacts</button>
+
+                </form>
+
+
+
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="alert alert-warning" role="alert">
+                  Please note that sometimes (with some domains/PBXs) the API will return an error, and It will not
+                  return contacts. At the moment of writting you can reproduce the issue with domain
+                  <strong>taxguys.22345.service</strong>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Row for "Show/Select Contacts" meu -->
+            <div class="row">
+              <div class="col">
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Show and select contacts toolbar">
+
+                  <!-- Label -->
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text" id="btnGroupAddon">Contacts</div>
+                    </div>
+                  </div>
+
+                  <!-- Radio Show phones Buttons -->
+                  <div class="btn-group btn-group-toggle showContactsButtons ml-1" data-toggle="buttons">
+                    <label class="btn btn-success showAllContacts disabled">
+                      <input type="radio" name="options" id="option1" autocomplete="off"> Show/Deselect All
+                    </label>
+                    <label class="btn btn-success selectAllContacts disabled">
+                      <input type="radio" name="options" id="option2" autocomplete="off"> Select All
+                    </label>
+                    <label class="btn btn-success hideAllContacts disabled">
+                      <input type="radio" name="options" id="option4" autocomplete="off"> Hide
+                    </label>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Row for "Delete Contacts" menu -->
+            <div class="row mt-2">
+
+              <div class="col">
+                <div class="btn-toolbar" role="toolbar" aria-label="Delete contacts toolbar">
+
+                  <!-- Label -->
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text" id="btnGroupAddon">Delete Contacts</div>
+                    </div>
+                  </div>
+
+                  <!-- Delete Contacts Buttons -->
+                  <div class="btn-group deleteContactsButtons ml-1">
+
+
+                    <button type="button" class="btn btn-danger deleteAllContactsBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>All</button>
+                    <button type="button" class="btn btn-danger deleteExtContactsBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>Extension</button>
+                    <button type="button" class="btn btn-danger deleteSelectedContactsBtn" data-toggle="modal"
+                      data-target="#rebootModal" disabled>Selected</button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Row to display contacts -->
+            <div class="row mt-4">
+              <div class="col">
+
+                <table class="table table-dark contactsTab">
+                  <thead>
+                    <th scope="col">Select</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Work number</th>
+                    <th scope="col">Mobile Number</th>
+                    <th scope="col">Home Number</th>
+                    <th scope="col">Fax Number</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">ID</th>
+                  </thead>
+
+                  <!-- <tbody>
+                    <tr>
+                      <td>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="customCheck1">
+                          <label class="custom-control-label" for="customCheck1">1</label>
+                      </div>
+                      </td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                      <td>test</td>
+                    </tr>
+                  </tbody> -->
+
+                </table>
+
+              </div>
+            </div>
+
+
+
+
+          </div>
+          <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Test contact</div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+
+
+
+  <!-- Optional JavaScript -->
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src="data/scripts/main.js"></script>
+</body>
+
+</html>
